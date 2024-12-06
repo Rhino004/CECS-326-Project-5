@@ -19,7 +19,7 @@ void PrintMemoryState(int memory[], int frameSize){
     printf("Memory: ");
     for(int i = 0; i< frameSize; i++){
         if (memory[i] == -1){
-            printf("_");
+            printf("_");// This is added if nothing is at that spot
         }else{
             printf("%d", memory[i]);
         }
@@ -115,15 +115,15 @@ void LRU(int pages[], int pageCount, int frameSize){
 
 int main() {
     int pages[MAX_PAGES], pageCount;
-    int frameSize = 3; //frameSiaze can be between 1-10
+    int frameSize = 3; //frameSiaze can be a random # less than MaxFrame
 
     // Input
     printf("Enter the number of pages: ");
-    scanf("%d", &pageCount);
+    scanf("%d", &pageCount); //the size of the reference sequence
 
     printf("Enter the page reference sequence: ");
     for (int i = 0; i < pageCount; i++) {
-        scanf("%d", &pages[i]);
+        scanf("%d", &pages[i]); // the string given
     }
     
     // Run FIFO
