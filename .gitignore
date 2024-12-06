@@ -12,6 +12,7 @@
 
 # Ignore executables without an extension
 main
+paging
 
 # VS Code-related files
 .vscode/
