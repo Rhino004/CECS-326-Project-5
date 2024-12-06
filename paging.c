@@ -54,4 +54,6 @@ int main() {
     Fifo(pages, pageCount, frameSize);
     // Run LRU
     LRU(pages, pageCount, frameSize);
+
+    return 0;
 }
