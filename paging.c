@@ -6,11 +6,24 @@
 
 // Function to check if a page is in memory
 bool PageInMemory(int page, int memory[], int frameSize){
+    for (int i =0; i<frameSize; i++){
+        if (memory[i] == page){
+            return true;
+        }
+    }
     return false;
 }
 
 // Function to print memory state
 void PrintMemoryState(int memory[], int frameSize){
+    printf("Memory: ");
+    for(int i = 0; i< frameSize; i++){
+        if (memory[i] == -1){
+            printf("_");
+        }else{
+            printf("%d", memory[i]);
+        }
+    }
     printf("\n");
 }
 
@@ -25,7 +38,8 @@ void LRU(int pages[], int pageCount, int frameSize){
 }
 
 int main() {
-    int pages[MAX_PAGES], pageCount, frameSize;
+    int pages[MAX_PAGES], pageCount;
+    int frameSize = 3; //frameSiaze can be between 1-10
 
     // Input
     printf("Enter the number of pages: ");
