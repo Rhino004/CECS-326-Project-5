@@ -4,7 +4,7 @@
 #define MAX_FRAMES 10
 #define MAX_PAGES 50
 
-// Function to check if a page is in memory
+// Function to check if a page is in memory array
 bool PageInMemory(int memory[], int frameSize, int page){
     for (int i =0; i<frameSize; i++){
         if (memory[i] == page){
