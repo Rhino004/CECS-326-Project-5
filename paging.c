@@ -5,7 +5,7 @@
 #define MAX_PAGES 50
 
 // Function to check if a page is in memory
-bool PageInMemory(int page, int memory[], int frameSize){
+bool PageInMemory(int memory[], int frameSize, int page){
     for (int i =0; i<frameSize; i++){
         if (memory[i] == page){
             return true;
@@ -16,15 +16,20 @@ bool PageInMemory(int page, int memory[], int frameSize){
 
 // Function to print memory state
 void PrintMemoryState(int memory[], int frameSize){
-    printf("Memory: ");
-    for(int i = 0; i< frameSize; i++){
+    printf("[");
+    for (int i = 0; i < frameSize; i++)
+    {
         if (memory[i] == -1){
-            printf("_");// This is added if nothing is at that spot
-        }else{
+            printf("-");
+        }
+        else{
             printf("%d", memory[i]);
         }
+        if (i < frameSize - 1){
+            printf(", ");
+        }
     }
-    printf("\n");
+    printf("]");
 }
 
 // FIFO Page Replacement Algorithm
@@ -32,29 +37,33 @@ void FIFO(int pages[], int pageCount, int frameSize)
 {
     printf("\nFIFO Algorithm:\n");
     int memory[MAX_FRAMES];
-    int front = 0; // Points to the oldest page
-    int pageFaults = 0;
+    int pageFaults = 0, nextToReplace = 0;
 
-    // Initialize memory with -1
+    // Initialize memory
     for (int i = 0; i < frameSize; i++)
     {
         memory[i] = -1;
     }
+    printf("\nFIFO Page Replacement:\n");
+    printf("Step | Page | Memory State      | Page Fault?\n");
+    printf("-----|------|-------------------|------------\n");
 
     for (int i = 0; i < pageCount; i++)
     {
-        if (!isPageInMemory(pages[i], memory, frameSize))
+        printf("%4d | %4d | ", i + 1, pages[i]);
+        if (!PageInMemory(memory, frameSize, pages[i]))
         {
-            memory[front] = pages[i];
-            front = (front + 1) % frameSize; // Circular queue logic
+            memory[nextToReplace] = pages[i];
+            nextToReplace = (nextToReplace + 1) % frameSize; // Circular queue logic
             pageFaults++;
-            printf("Page %d caused a fault. ", pages[i]);
+            PrintMemoryState(memory, frameSize);
+            printf("      | Yes\n");
         }
         else
         {
-            printf("Page %d did not cause a fault. ", pages[i]);
+            PrintMemoryState(memory, frameSize);
+            printf("      | No\n");
         }
-        printMemoryState(memory, frameSize);
     }
 
     printf("Total Page Faults (FIFO): %d\n", pageFaults);
@@ -62,60 +71,59 @@ void FIFO(int pages[], int pageCount, int frameSize)
 
 // LRU Page Replacement Algorithm
 void LRU(int pages[], int pageCount, int frameSize){
-    printf("\nLRU Algorithm:\n");
-    int memory[MAX_FRAMES], recent[MAX_FRAMES];
+    int frames[MAX_FRAMES], lastUsed[MAX_FRAMES];
     int pageFaults = 0;
 
-    // Initialize memory and recent usage trackers
     for (int i = 0; i < frameSize; i++)
     {
-        memory[i] = -1;
-        recent[i] = -1;
+        frames[i] = -1;
+        lastUsed[i] = -1;
     }
+
+    printf("\nLRU Page Replacement:\n");
+    printf("Step | Page | Memory State      | Page Fault?\n");
+    printf("-----|------|-------------------|------------\n");
 
     for (int i = 0; i < pageCount; i++)
     {
-        if (!isPageInMemory(pages[i], memory, frameSize))
+        printf("%4d | %4d | ", i + 1, pages[i]);
+        if (!PageInMemory(frames, frameSize, pages[i]))
         {
             int lruIndex = 0;
-
-            // Find the least recently used page
             for (int j = 1; j < frameSize; j++)
             {
-                if (recent[j] < recent[lruIndex])
+                if (lastUsed[j] < lastUsed[lruIndex])
                 {
                     lruIndex = j;
                 }
             }
-
-            memory[lruIndex] = pages[i];
+            frames[lruIndex] = pages[i];
+            lastUsed[lruIndex] = i;
             pageFaults++;
-            printf("Page %d caused a fault. ", pages[i]);
+            PrintMemoryState(frames, frameSize);
+            printf("      | Yes\n");
         }
         else
         {
-            printf("Page %d did not cause a fault. ", pages[i]);
-        }
-
-        // Update recent usage
-        for (int j = 0; j < frameSize; j++)
-        {
-            if (memory[j] != -1)
+            for (int j = 0; j < frameSize; j++)
             {
-                recent[j]++;
+                if (frames[j] == pages[i])
+                {
+                    lastUsed[j] = i;
+                    break;
+                }
             }
+            PrintMemoryState(frames, frameSize);
+            printf("      | No\n");
         }
-        recent[i % frameSize] = 0;
-
-        printMemoryState(memory, frameSize);
     }
 
-    printf("Total Page Faults (LRU): %d\n", pageFaults);
+    printf("Total Page Faults: %d\n", pageFaults);
 }
 
 int main() {
     int pages[MAX_PAGES], pageCount;
-    int frameSize = 3; //frameSiaze can be a random # less than MaxFrame
+    int frameSize = 2; //frameSiaze can be a random # less than MaxFrame
 
     // Input
     printf("Enter the number of pages: ");
@@ -126,9 +134,21 @@ int main() {
         scanf("%d", &pages[i]); // the string given
     }
     
-    // Run FIFO
-    Fifo(pages, pageCount, frameSize);
-    // Run LRU
+    // Run FIFO with 2 frame
+    FIFO(pages, pageCount, frameSize);
+    // Run LRU with 2 frame
+    LRU(pages, pageCount, frameSize);
+
+    frameSize = 3;
+    // Run FIFO with 3 frame
+    FIFO(pages, pageCount, frameSize);
+    // Run LRU with 3 frame
+    LRU(pages, pageCount, frameSize);
+
+    frameSize = 4;
+    // Run FIFO with 4 frame
+    FIFO(pages, pageCount, frameSize);
+    // Run LRU with 4 frame
     LRU(pages, pageCount, frameSize);
 
     return 0;
