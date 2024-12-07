@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define MAX_FRAMES 10
 #define MAX_PAGES 50
 
 // Function to check if a page is in memory array
 bool PageInMemory(int memory[], int frameSize, int page) {
-    for (int i =0; i<frameSize; i++) {
+    for (int i = 0; i < frameSize; i++) {
         if (memory[i] == page) { return true; }
     }
     return false;
@@ -16,23 +18,22 @@ bool PageInMemory(int memory[], int frameSize, int page) {
 void PrintMemoryState(int memory[], int frameSize) {
     printf("[");
     for (int i = 0; i < frameSize; i++) {
-        if (memory[i] == -1) { printf("-"); } 
+        if (memory[i] == -1) { printf("-"); }
         else { printf("%d", memory[i]); }
-        if (i < frameSize - 1){ printf(", "); }
+        if (i < frameSize - 1) { printf(", "); }
     }
     printf("]");
 }
 
 // FIFO Page Replacement Algorithm
 void FIFO(int pages[], int pageCount, int frameSize) {
-    printf("\nFIFO Algorithm:\n");
+    printf("\nFIFO Algorithm (Frames: %d):\n", frameSize);
     int memory[MAX_FRAMES];
     int pageFaults = 0, nextToReplace = 0;
 
     // Initialize memory
     for (int i = 0; i < frameSize; i++) { memory[i] = -1; }
 
-    printf("\nFIFO Page Replacement:\n");
     printf("Step | Page | Memory State      | Page Fault?\n");
     printf("-----|------|-------------------|------------\n");
 
@@ -62,7 +63,7 @@ void LRU(int pages[], int pageCount, int frameSize) {
         lastUsed[i] = -1;
     }
 
-    printf("\nLRU Page Replacement:\n");
+    printf("\nLRU Algorithm (Frames: %d):\n", frameSize);
     printf("Step | Page | Memory State      | Page Fault?\n");
     printf("-----|------|-------------------|------------\n");
 
@@ -89,36 +90,42 @@ void LRU(int pages[], int pageCount, int frameSize) {
             printf("      | No\n");
         }
     }
-    printf("Total Page Faults: %d\n", pageFaults);
+    printf("Total Page Faults (LRU): %d\n", pageFaults);
 }
 
 int main() {
-    int pages[MAX_PAGES], pageCount;
-    int frameSize = 2; //frameSiaze can be a random # less than MaxFrame
+    char pageInput[256];
+    char frameInput[256];
+    int pages[MAX_PAGES], pageCount = 0;
+    int frameSizes[MAX_FRAMES], frameCount = 0;
 
-    // Input
-    printf("Enter the number of pages: ");
-    scanf("%d", &pageCount); //the size of the reference sequence
+    // Input: Page Request Sequence
+    printf("Enter the Page Request Sequence (e.g. 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2): ");
+    scanf(" %[^\n]", pageInput);
 
-    printf("Enter the page reference sequence: ");
-    for (int i = 0; i < pageCount; i++) { scanf("%d", &pages[i]);}
-    
-    // Run FIFO with 2 frame
-    FIFO(pages, pageCount, frameSize);
-    // Run LRU with 2 frame
-    LRU(pages, pageCount, frameSize);
+    // Parse the page sequence
+    char *token = strtok(pageInput, ",");
+    while (token != NULL && pageCount < MAX_PAGES) {
+        pages[pageCount++] = atoi(token);
+        token = strtok(NULL, ",");
+    }
 
-    frameSize = 3;
-    // Run FIFO with 3 frame
-    FIFO(pages, pageCount, frameSize);
-    // Run LRU with 3 frame
-    LRU(pages, pageCount, frameSize);
+    // Input: Number of Frames
+    printf("Enter the Frame Sizes (e.g. 2, 3, 4): ");
+    scanf(" %[^\n]", frameInput);
 
-    frameSize = 4;
-    // Run FIFO with 4 frame
-    FIFO(pages, pageCount, frameSize);
-    // Run LRU with 4 frame
-    LRU(pages, pageCount, frameSize);
+    // Parse the frame sizes
+    token = strtok(frameInput, ",");
+    while (token != NULL && frameCount < MAX_FRAMES) {
+        frameSizes[frameCount++] = atoi(token);
+        token = strtok(NULL, ",");
+    }
+
+    // Run algorithms for each frame size
+    for (int i = 0; i < frameCount; i++) {
+        FIFO(pages, pageCount, frameSizes[i]);
+        LRU(pages, pageCount, frameSizes[i]);
+    }
 
     return 0;
 }
