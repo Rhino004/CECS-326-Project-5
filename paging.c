@@ -34,7 +34,7 @@ void FIFO(int pages[], int pageCount, int frameSize) {
     // Initialize memory
     for (int i = 0; i < frameSize; i++) { memory[i] = -1; }
 
-    printf("Step | Page | Memory State      | Page Fault?\n");
+    printf("Step | Page | Memory State            | Page Fault?\n");
     printf("-----|------|-------------------|------------\n");
 
     for (int i = 0; i < pageCount; i++) {
@@ -44,10 +44,10 @@ void FIFO(int pages[], int pageCount, int frameSize) {
             nextToReplace = (nextToReplace + 1) % frameSize; // Circular queue logic
             pageFaults++;
             PrintMemoryState(memory, frameSize);
-            printf("      | Yes\n");
+            printf("            | Yes\n");
         } else {
             PrintMemoryState(memory, frameSize);
-            printf("      | No\n");
+            printf("            | No\n");
         }
     }
     printf("Total Page Faults (FIFO): %d\n", pageFaults);
@@ -64,7 +64,7 @@ void LRU(int pages[], int pageCount, int frameSize) {
     }
 
     printf("\nLRU Algorithm (Frames: %d):\n", frameSize);
-    printf("Step | Page | Memory State      | Page Fault?\n");
+    printf("Step | Page | Memory State            | Page Fault?\n");
     printf("-----|------|-------------------|------------\n");
 
     for (int i = 0; i < pageCount; i++) {
@@ -78,7 +78,7 @@ void LRU(int pages[], int pageCount, int frameSize) {
             lastUsed[lruIndex] = i;
             pageFaults++;
             PrintMemoryState(frames, frameSize);
-            printf("      | Yes\n");
+            printf("            | Yes\n");
         } else {
             for (int j = 0; j < frameSize; j++) {
                 if (frames[j] == pages[i]) {
@@ -87,7 +87,7 @@ void LRU(int pages[], int pageCount, int frameSize) {
                 }
             }
             PrintMemoryState(frames, frameSize);
-            printf("      | No\n");
+            printf("            | No\n");
         }
     }
     printf("Total Page Faults (LRU): %d\n", pageFaults);
@@ -110,6 +110,12 @@ int main() {
         token = strtok(NULL, ",");
     }
 
+    // Validate the number of pages
+    if (pageCount > MAX_PAGES) {
+        printf("Error: Number of pages exceeds the maximum limit (%d).\n", MAX_PAGES);
+        return 1;
+    }
+
     // Input: Number of Frames
     printf("Enter the Frame Sizes (e.g. 2, 3, 4): ");
     scanf(" %[^\n]", frameInput);
@@ -120,6 +126,14 @@ int main() {
         frameSizes[frameCount++] = atoi(token);
         token = strtok(NULL, ",");
     }
+
+    // Validate each frame size
+      for (int i = 0; i < frameCount; i++) {
+          if (frameSizes[i] > MAX_FRAMES) {
+              printf("Error: Frame size %d exceeds the maximum limit (%d).\n", frameSizes[i], MAX_FRAMES);
+              return 2;
+          }
+      }
 
     // Run algorithms for each frame size
     for (int i = 0; i < frameCount; i++) {
