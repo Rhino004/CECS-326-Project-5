@@ -20,6 +20,5 @@ It calculates and displays the number of page faults and the memory state at eac
 
 ## Arguments
 
-`Enter the Page Request Sequence (e.g. 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2): 7,0,1,2,0,3,0,4,2,3,0,3,2`
-`Enter the Frame Sizes (e.g. 2, 3, 4): 2,3,4`
-
+Enter the Page Request Sequence (e.g. 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2): `7,0,1,2,0,3,0,4,2,3,0,3,2`
+Enter the Frame Sizes (e.g. 2, 3, 4): `2,3,4`
